@@ -1,12 +1,7 @@
-import React from "react";
-import CurrencyConverter from "./components/CurrencyConverter";
+import CurrencyConverter from "./components/CurrencyConverter/CurrencyConverter";
 
 const App = () => {
-  return (
-    <div className="app">
-      <CurrencyConverter />
-    </div>
-  );
+  return <CurrencyConverter />;
 };
 
 export default App;

@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import "./App.css";
+import { useState } from "react";
+import "./CurrencyConverter.css";
+import Loader from "../Loader/Loader";
 
 const apiUrl = "https://api.nbp.pl/api/exchangerates/rates/a/";
-
-const Loader = () => <div className="loader" id="loader"></div>;
 
 const CurrencyConverter = () => {
   const [amount, setAmount] = useState("");
@@ -18,10 +17,15 @@ const CurrencyConverter = () => {
   const getCurrencyRate = async (currency) => {
     const response = await fetch(`${apiUrl}${currency}`);
     const data = await response.json();
-    return data.rates[0].mid;
+    return data?.rates?.[0]?.mid;
   };
 
   const calculateResult = (rate, amount) => {
+    if (typeof rate === "undefined") {
+      throw new Error(
+        "Nie udało się pobrać kursu waluty. Spróbuj ponownie później."
+      );
+    }
     const result = rate * amount;
     return result.toFixed(2);
   };
@@ -39,8 +43,14 @@ const CurrencyConverter = () => {
     toggleLoader(true);
     try {
       const rate = await getCurrencyRate(selectedCurrency);
-      const calculatedResult = calculateResult(rate, amount);
-      setResult(`${amount} ${selectedCurrency} = ${calculatedResult} PLN`);
+      if (typeof rate === "undefined") {
+        setResult(
+          "Nie udało się pobrać kursu waluty. Spróbuj ponownie później."
+        );
+      } else {
+        const calculatedResult = calculateResult(rate, amount);
+        setResult(`${amount} ${selectedCurrency} = ${calculatedResult} PLN`);
+      }
     } catch (error) {
       setResult("Błąd. Spróbuj ponownie później.");
     }
